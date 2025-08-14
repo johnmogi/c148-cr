@@ -71,11 +71,14 @@
   function initSliderFromRoots(host, roots){
     const pairs = [];
     roots.forEach(root => {
-      let list = root.querySelectorAll('.comeet-position, .comeet-position-item, .comeet-list-item, .position');
-      if (!list.length) list = root.querySelectorAll('li');
+      let list = root.querySelectorAll('.comeet-position, .comeet-position-item, .comeet-list-item, .position, li');
       list.forEach(it => pairs.push({item: it, anchor: q('a[href], [data-url], [data-href]', it)}));
     });
     if (!pairs.length){ console.warn('[Comeet Slider] No job items found'); return; }
+    
+    // Limit to maximum 18 jobs
+    const maxJobs = 18;
+    const limitedPairs = pairs.slice(0, maxJobs);
 
     const swiperEl = document.createElement('div');
     swiperEl.className = 'swiper';
@@ -83,7 +86,7 @@
     wrap.className = 'swiper-wrapper';
     swiperEl.appendChild(wrap);
 
-    pairs.forEach(({item, anchor}) => wrap.appendChild(buildSlideFromItem(item, anchor)));
+    limitedPairs.forEach(({item, anchor}) => wrap.appendChild(buildSlideFromItem(item, anchor)));
 
     const nav = document.createElement('div');
     nav.className = 'cr-jobs-nav';
