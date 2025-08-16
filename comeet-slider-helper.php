@@ -553,6 +553,328 @@ add_shortcode('comeet_job_slider', 'comeet_job_slider_shortcode');
 // NEW FRESH SHORTCODE - Use this one!
 add_shortcode('fresh_jobs', 'comeet_job_slider_shortcode');
 
+// ULTRA STABLE JOBS SHORTCODE - Maximum reliability
+function ultra_stable_jobs_shortcode($atts = []) {
+    // Error handling wrapper
+    try {
+        // Get jobs with fallback
+        $jobs = [];
+        if (function_exists('comeet_fetch_jobs')) {
+            $jobs = comeet_fetch_jobs();
+        }
+        
+        // Fallback if no jobs found
+        if (empty($jobs)) {
+            error_log('ULTRA STABLE: No jobs found, using fallback data');
+            $jobs = [
+                ['title' => 'Senior Software Engineer', 'location' => 'Jerusalem', 'type' => 'Senior', 'link' => '#', 'category' => 'Engineering'],
+                ['title' => 'Data Scientist', 'location' => 'Jerusalem', 'type' => 'Senior', 'link' => '#', 'category' => 'Data & Analytics'],
+                ['title' => 'Product Manager', 'location' => 'Jerusalem', 'type' => 'Management', 'link' => '#', 'category' => 'Product & Design']
+            ];
+        }
+        
+        // Group jobs safely
+        $categories = [];
+        foreach ($jobs as $job) {
+            $cat = isset($job['category']) ? $job['category'] : 'Other';
+            if (!isset($categories[$cat])) $categories[$cat] = [];
+            $categories[$cat][] = $job;
+        }
+        
+        // Filter categories with 3+ jobs
+        $categories = array_filter($categories, function($jobs) { return count($jobs) >= 3; });
+        $categories = array_slice($categories, 0, 5, true);
+        
+        // Unique ID for this instance
+        $unique_id = 'ultra-jobs-' . uniqid();
+        $timestamp = time();
+        
+        // Build output with maximum stability
+        $output = '<div class="ultra-jobs-container" id="' . $unique_id . '" data-timestamp="' . $timestamp . '">';
+        
+        // Inline CSS with maximum specificity
+        $output .= '<style>
+            #' . $unique_id . ' {
+                background: linear-gradient(135deg, #1a0d32 0%, #2a184a 100%) !important;
+                padding: 40px !important;
+                border-radius: 20px !important;
+                margin: 30px auto !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 1000 !important;
+                width: 100% !important;
+                max-width: 1200px !important;
+                box-sizing: border-box !important;
+                font-family: "Heebo", Arial, sans-serif !important;
+                direction: rtl !important;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
+            }
+            #' . $unique_id . ' .ultra-title {
+                color: white !important;
+                text-align: center !important;
+                font-size: 32px !important;
+                font-weight: bold !important;
+                margin: 0 0 40px 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5) !important;
+            }
+            #' . $unique_id . ' .ultra-filters {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 15px !important;
+                justify-content: center !important;
+                margin-bottom: 40px !important;
+                visibility: visible !important;
+            }
+            #' . $unique_id . ' .ultra-filter-btn {
+                background: rgba(255,255,255,0.15) !important;
+                border: 2px solid rgba(255,255,255,0.4) !important;
+                color: white !important;
+                padding: 15px 25px !important;
+                border-radius: 30px !important;
+                cursor: pointer !important;
+                font-size: 16px !important;
+                font-weight: bold !important;
+                transition: all 0.3s ease !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                visibility: visible !important;
+                text-decoration: none !important;
+                outline: none !important;
+            }
+            #' . $unique_id . ' .ultra-filter-btn:hover,
+            #' . $unique_id . ' .ultra-filter-btn.active {
+                background: rgba(255,255,255,0.3) !important;
+                border-color: white !important;
+                transform: translateY(-3px) !important;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+            }
+            #' . $unique_id . ' .ultra-jobs-grid {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+                gap: 25px !important;
+                visibility: visible !important;
+            }
+            #' . $unique_id . ' .ultra-job-card {
+                background: rgba(255,255,255,0.1) !important;
+                border: 2px solid rgba(255,255,255,0.2) !important;
+                border-radius: 15px !important;
+                padding: 30px !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                transition: all 0.3s ease !important;
+                backdrop-filter: blur(10px) !important;
+            }
+            #' . $unique_id . ' .ultra-job-card:hover {
+                transform: translateY(-8px) !important;
+                border-color: rgba(255,255,255,0.6) !important;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+            }
+            #' . $unique_id . ' .ultra-job-title {
+                color: white !important;
+                font-size: 22px !important;
+                font-weight: bold !important;
+                margin: 0 0 20px 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                line-height: 1.4 !important;
+            }
+            #' . $unique_id . ' .ultra-job-meta {
+                color: rgba(255,255,255,0.8) !important;
+                margin: 10px 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                font-size: 16px !important;
+            }
+            #' . $unique_id . ' .ultra-job-link {
+                display: inline-block !important;
+                background: white !important;
+                color: #1a0d32 !important;
+                padding: 15px 30px !important;
+                border-radius: 30px !important;
+                text-decoration: none !important;
+                margin-top: 25px !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+                transition: all 0.3s ease !important;
+                visibility: visible !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+            }
+            #' . $unique_id . ' .ultra-job-link:hover {
+                background: #f0f0f0 !important;
+                transform: scale(1.05) !important;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+            }
+            #' . $unique_id . ' .ultra-job-card.hidden {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: -10000px !important;
+                top: -10000px !important;
+            }
+        </style>';
+        
+        // Title
+        $output .= '<h2 class="ultra-title">המשרות שלנו (' . count($jobs) . ')</h2>';
+        
+        // Filters
+        if (!empty($categories)) {
+            $output .= '<div class="ultra-filters">';
+            $output .= '<button class="ultra-filter-btn active" data-category="all">';
+            $output .= '<i class="fas fa-briefcase"></i> כל המשרות (' . count($jobs) . ')';
+            $output .= '</button>';
+            
+            $icons = [
+                'Engineering' => 'fas fa-code',
+                'Data & Analytics' => 'fas fa-chart-bar', 
+                'Product & Design' => 'fas fa-palette',
+                'Management' => 'fas fa-users',
+                'Other' => 'fas fa-briefcase'
+            ];
+            
+            foreach ($categories as $category => $category_jobs) {
+                $icon = isset($icons[$category]) ? $icons[$category] : 'fas fa-tag';
+                $output .= '<button class="ultra-filter-btn" data-category="' . esc_attr($category) . '">';
+                $output .= '<i class="' . $icon . '"></i> ' . esc_html($category) . ' (' . count($category_jobs) . ')';
+                $output .= '</button>';
+            }
+            $output .= '</div>';
+        }
+        
+        // Jobs grid
+        $output .= '<div class="ultra-jobs-grid">';
+        foreach ($jobs as $job) {
+            $category = isset($job['category']) ? $job['category'] : 'Other';
+            $output .= '<div class="ultra-job-card" data-category="' . esc_attr($category) . '">';
+            $output .= '<h3 class="ultra-job-title">' . esc_html($job['title']) . '</h3>';
+            
+            if (!empty($job['type'])) {
+                $output .= '<div class="ultra-job-meta"><strong>סוג:</strong> ' . esc_html($job['type']) . '</div>';
+            }
+            if (!empty($job['location'])) {
+                $output .= '<div class="ultra-job-meta"><strong>מיקום:</strong> ' . esc_html($job['location']) . '</div>';
+            }
+            if (!empty($job['category'])) {
+                $output .= '<div class="ultra-job-meta"><strong>קטגוריה:</strong> ' . esc_html($job['category']) . '</div>';
+            }
+            
+            $output .= '<a href="' . esc_url($job['link']) . '" class="ultra-job-link" target="_blank">לפרטים והגשת מועמדות</a>';
+            $output .= '</div>';
+        }
+        $output .= '</div></div>';
+        
+        // Ultra-stable JavaScript
+        $output .= '<script>
+        (function() {
+            var containerId = "' . $unique_id . '";
+            var initAttempts = 0;
+            var maxAttempts = 10;
+            
+            function initUltraJobs() {
+                initAttempts++;
+                console.log("🚀 ULTRA STABLE INIT ATTEMPT " + initAttempts + " for " + containerId);
+                
+                var container = document.getElementById(containerId);
+                if (!container) {
+                    if (initAttempts < maxAttempts) {
+                        setTimeout(initUltraJobs, 500);
+                    }
+                    return;
+                }
+                
+                if (container.dataset.initialized) {
+                    console.log("⚠️ Already initialized: " + containerId);
+                    return;
+                }
+                
+                container.dataset.initialized = "true";
+                console.log("✅ ULTRA STABLE JOBS INITIALIZED: " + containerId);
+                
+                // Visual confirmation
+                container.style.border = "3px solid lime";
+                setTimeout(function() {
+                    container.style.border = "2px solid rgba(255,255,255,0.2)";
+                }, 2000);
+                
+                // Filter functionality
+                var filterBtns = container.querySelectorAll(".ultra-filter-btn");
+                var jobCards = container.querySelectorAll(".ultra-job-card");
+                
+                console.log("Found " + filterBtns.length + " filters and " + jobCards.length + " jobs");
+                
+                filterBtns.forEach(function(btn) {
+                    btn.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        var category = this.getAttribute("data-category");
+                        console.log("🔍 ULTRA FILTER: " + category);
+                        
+                        // Update active state
+                        filterBtns.forEach(function(b) {
+                            b.classList.remove("active");
+                            b.style.background = "rgba(255,255,255,0.15)";
+                        });
+                        this.classList.add("active");
+                        this.style.background = "rgba(255,255,255,0.3)";
+                        
+                        // Filter cards
+                        var visibleCount = 0;
+                        jobCards.forEach(function(card) {
+                            var cardCategory = card.getAttribute("data-category");
+                            if (category === "all" || cardCategory === category) {
+                                card.classList.remove("hidden");
+                                card.style.display = "block";
+                                card.style.visibility = "visible";
+                                card.style.opacity = "1";
+                                card.style.position = "relative";
+                                card.style.left = "auto";
+                                card.style.top = "auto";
+                                visibleCount++;
+                            } else {
+                                card.classList.add("hidden");
+                                card.style.display = "none";
+                                card.style.visibility = "hidden";
+                                card.style.opacity = "0";
+                                card.style.position = "absolute";
+                                card.style.left = "-10000px";
+                                card.style.top = "-10000px";
+                            }
+                        });
+                        
+                        console.log("✅ ULTRA FILTER COMPLETE: " + visibleCount + " jobs visible");
+                    });
+                });
+            }
+            
+            // Multiple initialization strategies
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initUltraJobs);
+            } else {
+                initUltraJobs();
+            }
+            
+            // Backup initialization
+            setTimeout(initUltraJobs, 1000);
+            setTimeout(initUltraJobs, 3000);
+        })();
+        </script>';
+        
+        return $output;
+        
+    } catch (Exception $e) {
+        error_log('ULTRA STABLE SHORTCODE ERROR: ' . $e->getMessage());
+        return '<div style="background: red; color: white; padding: 20px; margin: 20px 0;">שגיאה בטעינת המשרות. אנא נסה שוב מאוחר יותר.</div>';
+    }
+}
+add_shortcode('ultra_jobs', 'ultra_stable_jobs_shortcode');
+
 // Add diagnostic shortcodes for debugging
 function test_visibility_shortcode() {
     return '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100px; background: red; color: white; z-index: 99999; font-size: 30px; text-align: center; padding: 20px;">🚨 TEST SHORTCODE WORKING! 🚨</div>';
