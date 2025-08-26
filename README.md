@@ -5,7 +5,7 @@
 ### Root Cause
 - **ID Conflict**: The page containing the job listings had the same ID as another element in the DOM
 - **CSS Specificity**: Global CSS rules were hiding elements with this duplicate ID
-- **JavaScript Initialization**: The slider initialization was failing silently due to the ID conflict
+- **JavaScript I nitialization**: The slider initialization was failing silently due to the ID conflict
 
 ### Solution Implemented
 1. **Renamed the container ID** from `careers` to `ultra-jobs-container`
